@@ -1,0 +1,44 @@
+---
+title: "ej_screen"
+format: html
+---
+
+```{r}
+library(tidyverse)
+library(sf)
+library(here)
+library(stars)
+library(tmap)
+
+
+# read in geodatabase of EJScreen data at the Census Block Group level
+ejscreen <- sf::st_read(here::here("data", "ejscreen","EJSCREEN_2023_BG_StatePct_with_AS_CNMI_GU_VI.gdb")) 
+
+# filter to a state you are interested in
+california <- ejscreen %>%
+  dplyr::filter(ST_ABBREV == "CA") 
+
+# filter to a county you are interested in
+la <- ejscreen %>%
+  dplyr::filter(CNTY_NAME %in% c("Los Angeles County"))
+
+# find the average values for all variables within counties
+california_counties <- aggregate(california, by = list(california$CNTY_NAME), FUN = mean)
+```
+
+```{r}
+tm_shape(la) +
+  tm_polygons(fill = "PEOPCOLORPCT")
+  
+```
+```{r}
+tm_shape(la) +
+  tm_polygons(fill = "PEOPCOLORPCT")
+```
+
+```{r}
+tm_shape(la) +
+  tm_polygons(fill = "RSEI_AIR")
+```
+
+
