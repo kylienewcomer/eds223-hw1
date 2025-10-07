@@ -1,6 +1,7 @@
 # EDS 223 Homework #1
+### Author: Kylie Newcomer
 
-This repository contains the materials for homework assignment #1 for **EDS 223 Geospatial Analysis and Remote Sensing**. Materials for this assignment can be found on the [course website](https://eds-223-geospatial.github.io/).
+This repository contains the materials for the environmental justice homework assignment for **EDS 223 Geospatial Analysis and Remote Sensing**. Materials for this assignment can be found on the [course website](https://eds-223-geospatial.github.io/).
 
 ## Data
 
@@ -8,7 +9,7 @@ Data is from the United States Environmental Protection Agency's EJScreen: Envir
 
 ## Workflow
 
-The EJScreen data was filtered to the Inland Empire (Riverside and San Bernardino County) in Southern California. Maps displaying the percent of low income households and particulate matter 2.5 across the two counties were made using `tmap()`.
+The EJScreen data was filtered to the Inland Empire (Riverside and San Bernardino County) in Southern California. Data was mutated to create variables looking at the estimated number of children under 5 years old living in poverty and in home with lead paint by multiplying the number of children by the poverty andf lead paint home percentages. Maps displaying these factors across the two counties were made using `tmap()`.
 
 ## Citations
 
