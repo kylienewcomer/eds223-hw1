@@ -22,12 +22,11 @@ california <- ejscreen %>%
   dplyr::filter(ST_ABBREV == "CA") 
 
 # filter to a county you are interested in
-
+# Selecting counties in the Inland Empire
 ie <- ejscreen %>%
   dplyr::filter(CNTY_NAME %in% c("Riverside County", "San Bernardino County"))
 
-so_cal <- ejscreen %>%
-  dplyr::filter(CNTY_NAME %in% c("Riverside County", "San Bernardino County", "Los Angeles County"))
+
 
 # find the average values for all variables within counties
 california_counties <- aggregate(california, by = list(california$CNTY_NAME), FUN = mean)
