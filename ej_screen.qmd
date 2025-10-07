@@ -1,6 +1,8 @@
 ---
 title: "ej_screen"
 format: html
+warning: false
+error: false
 ---
 
 ```{r}
@@ -22,23 +24,103 @@ california <- ejscreen %>%
 la <- ejscreen %>%
   dplyr::filter(CNTY_NAME %in% c("Los Angeles County"))
 
+sf <- ejscreen %>%
+  dplyr::filter(CNTY_NAME %in% c("San Francisco County"))
+
+riv <- ejscreen %>%
+  dplyr::filter(CNTY_NAME %in% c("Riverside County"))
+
+ie <- ejscreen %>%
+  dplyr::filter(CNTY_NAME %in% c("Riverside County", "San Bernardino County"))
 # find the average values for all variables within counties
 california_counties <- aggregate(california, by = list(california$CNTY_NAME), FUN = mean)
 ```
 
 ```{r}
-tm_shape(la) +
-  tm_polygons(fill = "PEOPCOLORPCT")
-  
-```
-```{r}
-tm_shape(la) +
-  tm_polygons(fill = "PEOPCOLORPCT")
+tmap_mode("plot")
 ```
 
 ```{r}
 tm_shape(la) +
-  tm_polygons(fill = "RSEI_AIR")
+  tm_graticules() +
+  tm_polygons(fill = "PEOPCOLORPCT", fill.legend = tm_legend(title = "People of Color (%)")) +
+  tm_scalebar() +
+  tm_compass(position = c("right", "bottom"))
 ```
+
+```{r}
+tm_shape(la) +
+  tm_polygons(fill = "DSLPM", fill.legend = tm_legend(title = "Diesel Particulate Matter")) +
+  tm_scalebar() +
+  tm_compass(position = c("right", "bottom"))
+```
+
+```{r}
+tm_shape(sf) +
+  tm_polygons(fill = "LOWINCPCT", fill.legend = tm_legend(title = "Percent of Low Income Households", orientation = "portrait")) +
+  tm_scalebar() +
+  tm_compass(position = c("right", "bottom"))
+
+```
+
+```{r}
+tm_shape(sf) +
+  tm_graticules() +
+  tm_polygons(fill = "PEOPCOLORPCT", fill.legend = tm_legend(title = "People of Color (%)")) +
+  tm_scalebar() +
+  tm_compass(position = c("right", "bottom"))
+```
+
+```{r}
+tm_shape(ie) +
+  tm_graticules() +
+  tm_polygons(fill = "PEOPCOLORPCT", 
+              fill.legend = tm_legend(title = "Low Income \nHouseholds", 
+                                      orientation = "portrait", 
+                                      tm_pos_out = c("center", "right"),
+                                      frame = FALSE,
+                                      width = 3.75),
+              fill.scale = tm_scale_continuous(values = "-magma", 
+                                               labels = c("0%", "20%", "40%", 
+                                                          "60%", "80%", "100%"))) +
+  tm_scalebar(position = tm_pos_in("right", "top")) +
+  tm_compass(position = c("left", "top")) +
+  tm_title("Distribution of Low Income Households in Riverside County")
+
+```
+
+```{r}
+tm_shape(ie) +
+  tm_graticules() +
+  tm_polygons(fill = "LIFEEXPPCT", 
+              fill.legend = tm_legend(title = "Percent of Homes \nwith Lead Paint", 
+                                      tm_pos_out = c("center", "bottom"),
+                                      orientation = "portrait",
+                                      frame = FALSE), 
+              fill.scale = tm_scale_continuous(values = "-magma", 
+                                               labels = c("0%", "20%", "40%", 
+                                                          "60%", "80%", "100%"))) +
+  tm_scalebar(position = tm_pos_in("right", "top")) +
+  tm_compass(position = c("left", "top")) +
+  tm_title("Distribution of Homes with Lead Paint in Riverside County")
+  
+```
+
+
+```{r}
+tm_shape(ie) +
+  tm_graticules() +
+  tm_polygons(fill = "PRE1960PCT", 
+              fill.legend = tm_legend(title = "Percent of Homes with Lead Paint", 
+                                      tm_pos_out = c("center", "bottom"),
+                                      orientation = "landscape"), 
+              fill.scale = tm_scale_continuous(values = "-magma", 
+                                               labels = c("0%", "20%", "40%", 
+                                                          "60%", "80%", "100%"))) +
+  tm_compass(position = c("right", "top")) +
+  tm_scalebar(position = tm_pos_in("right", "bottom")) +
+  tm_title("Distribution of Homes with Lead Paint in the Inland Empire")
+```
+
 
 
