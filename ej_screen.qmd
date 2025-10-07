@@ -1,7 +1,7 @@
 ---
 title: "Evironmental Injustice in the Inland Empire, CA"
 author: "Kylie Newcomer"
-format: html
+format: pdf
 warning: false
 error: false
 message: false
