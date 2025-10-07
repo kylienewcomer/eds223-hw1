@@ -1,8 +1,10 @@
 ---
-title: "ej_screen"
+title: "Evironmental Injustice in the Inland Empire, CA"
+author: "Kylie Newcomer"
 format: html
 warning: false
 error: false
+message: false
 ---
 
 ```{r}
@@ -12,7 +14,6 @@ library(here)
 library(stars)
 library(tmap)
 
-
 # read in geodatabase of EJScreen data at the Census Block Group level
 ejscreen <- sf::st_read(here::here("data", "ejscreen","EJSCREEN_2023_BG_StatePct_with_AS_CNMI_GU_VI.gdb")) 
 
@@ -21,65 +22,28 @@ california <- ejscreen %>%
   dplyr::filter(ST_ABBREV == "CA") 
 
 # filter to a county you are interested in
-la <- ejscreen %>%
-  dplyr::filter(CNTY_NAME %in% c("Los Angeles County"))
-
-sf <- ejscreen %>%
-  dplyr::filter(CNTY_NAME %in% c("San Francisco County"))
-
-riv <- ejscreen %>%
-  dplyr::filter(CNTY_NAME %in% c("Riverside County"))
 
 ie <- ejscreen %>%
   dplyr::filter(CNTY_NAME %in% c("Riverside County", "San Bernardino County"))
+
+so_cal <- ejscreen %>%
+  dplyr::filter(CNTY_NAME %in% c("Riverside County", "San Bernardino County", "Los Angeles County"))
+
 # find the average values for all variables within counties
 california_counties <- aggregate(california, by = list(california$CNTY_NAME), FUN = mean)
 ```
 
-```{r}
-tmap_mode("plot")
-```
 
-```{r}
-tm_shape(la) +
-  tm_graticules() +
-  tm_polygons(fill = "PEOPCOLORPCT", fill.legend = tm_legend(title = "People of Color (%)")) +
-  tm_scalebar() +
-  tm_compass(position = c("right", "bottom"))
-```
-
-```{r}
-tm_shape(la) +
-  tm_polygons(fill = "DSLPM", fill.legend = tm_legend(title = "Diesel Particulate Matter")) +
-  tm_scalebar() +
-  tm_compass(position = c("right", "bottom"))
-```
-
-```{r}
-tm_shape(sf) +
-  tm_polygons(fill = "LOWINCPCT", fill.legend = tm_legend(title = "Percent of Low Income Households", orientation = "portrait")) +
-  tm_scalebar() +
-  tm_compass(position = c("right", "bottom"))
-
-```
-
-```{r}
-tm_shape(sf) +
-  tm_graticules() +
-  tm_polygons(fill = "PEOPCOLORPCT", fill.legend = tm_legend(title = "People of Color (%)")) +
-  tm_scalebar() +
-  tm_compass(position = c("right", "bottom"))
-```
+### Exploring the Data with Initial Visualization
 
 ```{r}
 tm_shape(ie) +
   tm_graticules() +
-  tm_polygons(fill = "PEOPCOLORPCT", 
-              fill.legend = tm_legend(title = "Low Income \nHouseholds", 
+  tm_polygons(fill = "LOWINCPCT", 
+              fill.legend = tm_legend(title = "Percent of Low \nIncome Households", 
                                       orientation = "portrait", 
                                       tm_pos_out = c("center", "right"),
-                                      frame = FALSE,
-                                      width = 3.75),
+                                      frame = FALSE),
               fill.scale = tm_scale_continuous(values = "-magma", 
                                                labels = c("0%", "20%", "40%", 
                                                           "60%", "80%", "100%"))) +
@@ -92,7 +56,7 @@ tm_shape(ie) +
 ```{r}
 tm_shape(ie) +
   tm_graticules() +
-  tm_polygons(fill = "LIFEEXPPCT", 
+  tm_polygons(fill = "PRE1960PCT", 
               fill.legend = tm_legend(title = "Percent of Homes \nwith Lead Paint", 
                                       tm_pos_out = c("center", "bottom"),
                                       orientation = "portrait",
@@ -106,21 +70,63 @@ tm_shape(ie) +
   
 ```
 
+### Creating my variables of interest
 
 ```{r}
-tm_shape(ie) +
-  tm_graticules() +
-  tm_polygons(fill = "PRE1960PCT", 
-              fill.legend = tm_legend(title = "Percent of Homes with Lead Paint", 
-                                      tm_pos_out = c("center", "bottom"),
-                                      orientation = "landscape"), 
-              fill.scale = tm_scale_continuous(values = "-magma", 
-                                               labels = c("0%", "20%", "40%", 
-                                                          "60%", "80%", "100%"))) +
-  tm_compass(position = c("right", "top")) +
-  tm_scalebar(position = tm_pos_in("right", "bottom")) +
-  tm_title("Distribution of Homes with Lead Paint in the Inland Empire")
+# Looking at children in poverty
+ie_kids <- ie %>% 
+  select(UNDER5, LOWINCPCT) %>%
+  mutate(kid_inc = (UNDER5*LOWINCPCT))
+
+min(ie_kids$kid_inc)
+max(ie_kids$kid_inc)
 ```
 
 
+```{r}
+# Want to see how that compares to children living in homes with lead pain
+ie_lead <- ie %>% 
+  select(UNDER5, PRE1960PCT) %>% 
+  mutate(kid_lead = (UNDER5*PRE1960PCT))
+
+min(ie_lead$kid_lead)
+max(ie_lead$kid_lead)
+```
+
+## Environmental Injustice Maps
+
+```{r}
+tm_shape(ie_kids) +
+  tm_graticules() +
+  tm_polygons(fill = "kid_inc", 
+              fill.legend = 
+                tm_legend(title = "Estimated Number of Children", 
+                                      tm_pos_out = c("center", "bottom"),
+                                      orientation = "portrait",
+                                      frame = FALSE), 
+              fill.scale = tm_scale_intervals(values = "-magma", 
+                                              n = 8)) +
+  tm_scalebar(position = tm_pos_in("right", "top")) +
+  tm_compass(position = c("left", "top")) +
+  tm_title("Children Living in Poverty in the Inland Empire")
+```
+
+```{r}
+tm_shape(ie_lead) +
+  tm_graticules() +
+  tm_polygons(fill = "kid_lead", 
+              fill.legend = 
+                tm_legend(title = "Estimated Number of Children", 
+                                      tm_pos_out = c("center", "bottom"),
+                                      orientation = "portrait",
+                                      frame = FALSE), 
+              fill.scale = tm_scale_intervals(values = "-magma")) +
+                                               #labels = c("0-1km", "1-2km", "40%", 
+                                                         # "60%", "80%", "100%"))) + 
+  tm_scalebar(position = tm_pos_in("right", "top")) +
+  tm_compass(position = c("left", "top")) +
+  tm_title("Children Living in Homes with Lead Paint in the Inland Empire")
+```
+
+The data contains population demographic and environmental factors throughout the US. I focused on the Inland Empire (Riverside and San Bernardino county) of California, because of the fast growing communities and relatively "affordable" living compared to other counties in Southern California. I started by mapping my factors of interest (poverty levels and potential homes with lead paint). I wanted to specifically focus on quality of life for children under 5 years old, starting with estimating how many children are living in poverty. After seeing regions with a large amount children living in poverty, I compared that to how many children were living in homes with lead paint. There did not seem to be a correlation between regions with high poverty levels and high percentages of homes with lead paint. I attempted other visualizations to see if there were increased health or environmental threats to the children in areas with high poverty levels but was unable to come to any conclusions.
 
