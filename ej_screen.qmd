@@ -34,7 +34,7 @@ california_counties <- aggregate(california, by = list(california$CNTY_NAME), FU
 ```
 
 
-### Exploring the Data with Initial Visualization
+### Inital Data Exploration
 
 ```{r}
 tm_shape(ie) +
@@ -49,7 +49,7 @@ tm_shape(ie) +
                                                           "60%", "80%", "100%"))) +
   tm_scalebar(position = tm_pos_in("right", "top")) +
   tm_compass(position = c("left", "top")) +
-  tm_title("Distribution of Low Income Households in Riverside County")
+  tm_title("Distribution of Low Income Households in the Inland Empire")
 
 ```
 
@@ -66,7 +66,7 @@ tm_shape(ie) +
                                                           "60%", "80%", "100%"))) +
   tm_scalebar(position = tm_pos_in("right", "top")) +
   tm_compass(position = c("left", "top")) +
-  tm_title("Distribution of Homes with Lead Paint in Riverside County")
+  tm_title("Distribution of Homes with Lead Paint in the Inland Empire")
   
 ```
 
@@ -76,8 +76,9 @@ tm_shape(ie) +
 # Looking at children in poverty
 ie_kids <- ie %>% 
   select(UNDER5, LOWINCPCT) %>%
-  mutate(kid_inc = (UNDER5*LOWINCPCT))
+  mutate(kid_inc = (UNDER5*LOWINCPCT)) # Number of children multiplied by percent in poverty
 
+# Checking the min and max to see the range
 min(ie_kids$kid_inc)
 max(ie_kids$kid_inc)
 ```
@@ -87,8 +88,9 @@ max(ie_kids$kid_inc)
 # Want to see how that compares to children living in homes with lead pain
 ie_lead <- ie %>% 
   select(UNDER5, PRE1960PCT) %>% 
-  mutate(kid_lead = (UNDER5*PRE1960PCT))
+  mutate(kid_lead = (UNDER5*PRE1960PCT)) # Number of children multiplied by percent of homes built pre 1960
 
+# Checking the min and max to see the range
 min(ie_lead$kid_lead)
 max(ie_lead$kid_lead)
 ```
@@ -121,8 +123,6 @@ tm_shape(ie_lead) +
                                       orientation = "portrait",
                                       frame = FALSE), 
               fill.scale = tm_scale_intervals(values = "-magma")) +
-                                               #labels = c("0-1km", "1-2km", "40%", 
-                                                         # "60%", "80%", "100%"))) + 
   tm_scalebar(position = tm_pos_in("right", "top")) +
   tm_compass(position = c("left", "top")) +
   tm_title("Children Living in Homes with Lead Paint in the Inland Empire")
