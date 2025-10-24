@@ -1,43 +1,49 @@
 ---
-title: "Evironmental Injustice in the Inland Empire, CA"
+title: "Environmental Injustice in the Inland Empire, CA"
 author: "Kylie Newcomer"
+date: 10/06/2025
 format: pdf
-warning: false
-error: false
-message: false
+execute: 
+  warning: false
+  error: false
+  message: false
 ---
 
-```{r}
+```{r, echo=FALSE}
 library(tidyverse)
 library(sf)
 library(here)
 library(stars)
 library(tmap)
+```
 
+### Reading in the Data
+```{r}
 # read in geodatabase of EJScreen data at the Census Block Group level
 ejscreen <- sf::st_read(here::here("data", "ejscreen","EJSCREEN_2023_BG_StatePct_with_AS_CNMI_GU_VI.gdb")) 
 
-# filter to a state you are interested in
+# filter to a state I am interested in
 california <- ejscreen %>%
   dplyr::filter(ST_ABBREV == "CA") 
 
 # filter to a county you are interested in
-# Selecting counties in the Inland Empire
-ie <- ejscreen %>%
+ie <- ejscreen %>% # selecting counties in the Inland Empire
   dplyr::filter(CNTY_NAME %in% c("Riverside County", "San Bernardino County"))
 
 
 
 # find the average values for all variables within counties
-california_counties <- aggregate(california, by = list(california$CNTY_NAME), FUN = mean)
+california_counties <- aggregate(california, 
+                                 by = list(california$CNTY_NAME), 
+                                 FUN = mean)
 ```
 
 
-### Inital Data Exploration
+### Initial Data Exploration
 
 ```{r}
+# creating an initial map to visualize parameter of interest
 tm_shape(ie) +
-  tm_graticules() +
   tm_polygons(fill = "LOWINCPCT", 
               fill.legend = tm_legend(title = "Percent of Low \nIncome Households", 
                                       orientation = "portrait", 
@@ -53,8 +59,8 @@ tm_shape(ie) +
 ```
 
 ```{r}
+# Creating another map to visualize my other parameter of interest
 tm_shape(ie) +
-  tm_graticules() +
   tm_polygons(fill = "PRE1960PCT", 
               fill.legend = tm_legend(title = "Percent of Homes \nwith Lead Paint", 
                                       tm_pos_out = c("center", "bottom"),
@@ -70,7 +76,7 @@ tm_shape(ie) +
 ```
 
 ### Creating my variables of interest
-
+To determine how children in low income areas are at potential risk to lead paint exposure, the number of children in low income homes is first estimated by multiplying the number of children under 5 years old by the percent of low income households.
 ```{r}
 # Looking at children in poverty
 ie_kids <- ie %>% 
@@ -82,7 +88,7 @@ min(ie_kids$kid_inc)
 max(ie_kids$kid_inc)
 ```
 
-
+A second variable to estimate number of children in houses built before 1960 (lead paint exposure) is created the same way as the previous variable.
 ```{r}
 # Want to see how that compares to children living in homes with lead pain
 ie_lead <- ie %>% 
@@ -95,10 +101,9 @@ max(ie_lead$kid_lead)
 ```
 
 ## Environmental Injustice Maps
-
+The two variables estimating number of children in low income households and homes built before 1960 are separately plotted to look for a correlation between children in low income homes and children with exposure to lead paint.
 ```{r}
 tm_shape(ie_kids) +
-  tm_graticules() +
   tm_polygons(fill = "kid_inc", 
               fill.legend = 
                 tm_legend(title = "Estimated Number of Children", 
@@ -114,7 +119,6 @@ tm_shape(ie_kids) +
 
 ```{r}
 tm_shape(ie_lead) +
-  tm_graticules() +
   tm_polygons(fill = "kid_lead", 
               fill.legend = 
                 tm_legend(title = "Estimated Number of Children", 
