@@ -1,4 +1,4 @@
-# EDS 223 Homework #1
+# Environmental InJustice in the Inland Empire, Ca
 ### Author: Kylie Newcomer
 
 This repository contains the materials for the environmental justice homework assignment for **EDS 223 Geospatial Analysis and Remote Sensing**. Materials for this assignment can be found on the [course website](https://eds-223-geospatial.github.io/).
